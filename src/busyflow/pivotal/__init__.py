@@ -22,8 +22,7 @@ def parse(node):
         obj_type = "dictionary"
     else:
         obj_type = "string"
-
-    return NODE_PARSERS[obj_type, parse_dict](node)
+    return NODE_PARSERS.get(obj_type, parse_dict)(node)
 
 
 def parse_csv(node):
@@ -69,7 +68,8 @@ NODE_PARSERS = {'array': parse_list,
                 'string': parse_string,
                 'dictionary': parse_dict,
                 'integer': lambda node: int(node.childNodes[0].wholeText.strip()),
-                'csv': parse_csv}
+                'csv': parse_csv,
+                'datetime': parse_datetime}
 
 
 class Endpoint(object):
