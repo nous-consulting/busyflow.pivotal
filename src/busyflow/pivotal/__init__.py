@@ -83,7 +83,7 @@ class Endpoint(object):
         return self.pivotal._apicall(endpoint, 'POST', **params)
 
     def _put(self, endpoint, **params):
-        return self.pivotal._apicall(endpoint, 'POST', **params)
+        return self.pivotal._apicall(endpoint, 'PUT', **params)
 
     def _delete(self, endpoint, **params):
         return self.pivotal._apicall(endpoint, 'DELETE', **params)
