@@ -10,6 +10,10 @@ from xml.dom import minidom
 log = logging.getLogger(__name__)
 
 
+class UnauthorizedError(Exception):
+    """Unauthorized exception"""
+
+
 def parse(node):
     # determine type
     if node.attributes:
@@ -223,6 +227,9 @@ class PivotalClient(object):
                 body = ''
 
         resp, content = self.client.request(url, method=method, body=body, headers=headers)
+        if resp.status == 401:
+            raise UnauthorizedError(content)
+
         try:
             parsed_content = self.parseContent(content)
             return parsed_content
