@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='busyflow.pivotal',
-    version='0.1.3',
+    version='0.1.4',
     description='Pivotal API client library.',
     author='Ignas Mikalajunas',
     author_email='ignas@nous.lt',

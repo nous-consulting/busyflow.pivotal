@@ -116,6 +116,9 @@ class IterationEndpoint(Endpoint):
     def backlog(self, project_id, limit=None, offset=None):
         return self._get("projects/%s/iterations/backlog" % project_id, limit=limit, offset=offset)
 
+    def current_backlog(self, project_id, limit=None, offset=None):
+        return self._get("projects/%s/iterations/current_backlog" % project_id, limit=limit, offset=offset)
+
 
 class ActivityEndpoint(Endpoint):
 
@@ -123,6 +126,13 @@ class ActivityEndpoint(Endpoint):
         return self._get("projects/%s/activities" % project_id, limit=limit,
                          occurred_since_date=occurred_since_date,
                          newer_than_version=newer_than_version)
+
+class TokenEndpoint(Endpoint):
+
+    def active(self, username, password):
+        return self._post('tokens/active',
+                          username=username,
+                          password=password)
 
 
 class StoryEndpoint(Endpoint):
@@ -209,6 +219,7 @@ class PivotalClient(object):
         self.stories = StoryEndpoint(self)
         self.activities = ActivityEndpoint(self)
         self.iterations = IterationEndpoint(self)
+        self.tokens = TokenEndpoint(self)
 
     def _apicall(self, endpoint, method, **params):
         url = '%s%s' % (self.base_url, endpoint)
