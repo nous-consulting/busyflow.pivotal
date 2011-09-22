@@ -40,13 +40,20 @@ def parse_csv(node):
     return value.split(",")
 
 
+def parse_string_to_dt(value):
+    try:
+        time_tuple = time.strptime(value, '%Y/%m/%d %H:%M:%S %Z')
+    except ValueError:
+        time_tuple = time.strptime(' '.join(value.split(' ')[:-1]), '%Y/%m/%d %H:%M:%S')
+    t = list(time_tuple)[:-2]
+    return datetime.datetime(*t)
+
+
 def parse_datetime(node):
     if len(node.childNodes) == 0:
         return None
     value = node.childNodes[0].wholeText.strip()
-    t = list(time.strptime(value, '%Y/%m/%d %H:%M:%S %Z'))[:-2]
-    return datetime.datetime(*t)
-
+    return parse_string_to_dt(value)
 
 def parse_list(parent_node):
     new_list = []
