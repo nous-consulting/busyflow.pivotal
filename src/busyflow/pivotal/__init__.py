@@ -10,7 +10,11 @@ from xml.dom import minidom
 log = logging.getLogger(__name__)
 
 
-class UnauthorizedError(Exception):
+class HTTPError(Exception):
+    """Base class for all HTTP errors."""
+
+
+class UnauthorizedError(HTTPError):
     """Unauthorized exception"""
 
 
@@ -243,6 +247,10 @@ class PivotalClient(object):
 
         try:
             parsed_content = self.parseContent(content)
+
+            if resp.status != 200:
+                raise HTTPError(parsed_content)
+
             return parsed_content
         except ValueError:
             log.error(resp, content)
