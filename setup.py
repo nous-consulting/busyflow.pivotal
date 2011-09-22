@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='busyflow.pivotal',
-    version='0.1.6',
+    version='0.1.7',
     description='Pivotal API client library.',
     author='Ignas Mikalajunas',
     author_email='ignas@nous.lt',
@@ -16,7 +16,8 @@ setup(
                  'Topic :: Internet :: WWW/HTTP'],
     install_requires=[
         'setuptools',
-        'xmlbuilder'],
+        'xmlbuilder',
+        'python-dateutil'],
     package_dir={'': 'src'},
     packages=find_packages('src'),
     namespace_packages=['busyflow'],

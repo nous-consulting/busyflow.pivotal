@@ -1,5 +1,7 @@
 import time
+import pkg_resources
 import datetime
+from dateutil import parser
 import httplib2
 import urllib
 import logging
@@ -40,13 +42,37 @@ def parse_csv(node):
     return value.split(",")
 
 
+_tzmap = None
+def get_tzmap():
+    global _tzmap
+    if _tzmap is None:
+        _tzmap = {}
+        tzmap_file = pkg_resources.resource_string('busyflow.pivotal', 'tzmap.txt')
+        for line in tzmap_file.splitlines():
+            [short_name, long_name, offset] = line.split('\t')
+            _tzmap[short_name] = offset
+    return _tzmap
+
+
 def parse_string_to_dt(value):
     try:
         time_tuple = time.strptime(value, '%Y/%m/%d %H:%M:%S %Z')
     except ValueError:
-        time_tuple = time.strptime(' '.join(value.split(' ')[:-1]), '%Y/%m/%d %H:%M:%S')
-    t = list(time_tuple)[:-2]
-    return datetime.datetime(*t)
+        try:
+            parts = value.split(' ')
+            dt = ' '.join(parts[:-1])
+            tz = parts[-1]
+            offset = get_tzmap().get(tz, '')
+            time_tuple = parser.parse(dt + ' ' + offset).utctimetuple()
+        except ValueError:
+            time_tuple = time.strptime(dt, '%Y/%m/%d %H:%M:%S')
+    return datetime.datetime(
+        time_tuple.tm_year,
+        time_tuple.tm_mon,
+        time_tuple.tm_mday,
+        time_tuple.tm_hour,
+        time_tuple.tm_min,
+        time_tuple.tm_sec)
 
 
 def parse_datetime(node):
