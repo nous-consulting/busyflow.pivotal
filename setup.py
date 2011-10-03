@@ -1,9 +1,20 @@
+import os.path
 from setuptools import setup, find_packages
+
+def get_long_description():
+    dirname = os.path.dirname(__file__)
+    readme = os.path.join(dirname, 'README.txt')
+    f = open(readme, 'rb')
+    try:
+        return f.read()
+    finally:
+        f.close()
 
 setup(
     name='busyflow.pivotal',
-    version='0.1.8',
+    version='0.1.9',
     description='Pivotal API client library.',
+    long_description=get_long_description(),
     author='Ignas Mikalajunas',
     author_email='ignas@nous.lt',
     url='http://github.com/Ignas/busyflow.pivotal/',
