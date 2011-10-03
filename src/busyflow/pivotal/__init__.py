@@ -81,6 +81,7 @@ def parse_datetime(node):
     value = node.childNodes[0].wholeText.strip()
     return parse_string_to_dt(value)
 
+
 def parse_list(parent_node):
     new_list = []
     for child_node in parent_node.childNodes:
@@ -138,6 +139,27 @@ class ProjectEndpoint(Endpoint):
     def all(self):
         return self._get("projects")
 
+    def activities(self, project_id, limit=None, occurred_since_date=None, newer_than_version=None):
+        return self._get("projects/%s/activities" % project_id, limit=limit,
+                         occurred_since_date=occurred_since_date,
+                         newer_than_version=newer_than_version)
+
+    def make_post_xml(self, name, iteration_length, point_scale):
+        project = XMLBuilder(format=True)
+        with project.project:
+            if name is not None:
+                project << ('name', name)
+            if iteration_length is not None:
+                project << ('iteration_length', iteration_length)
+            if point_scale is not None:
+                project << ('point_scale', point_scale)
+        return str(project)
+
+    def post(self, name, iteration_length, point_scale):
+        # XXX actually test it, add missing attributes
+        body = self.make_project_xml(name, iteration_length, point_scale)
+        return self._post("projects", body=body)
+
 
 class IterationEndpoint(Endpoint):
 
@@ -159,10 +181,11 @@ class IterationEndpoint(Endpoint):
 
 class ActivityEndpoint(Endpoint):
 
-    def all(self, project_id, limit=None, occurred_since_date=None, newer_than_version=None):
-        return self._get("projects/%s/activities" % project_id, limit=limit,
+    def all(self, limit=None, occurred_since_date=None, newer_than_version=None):
+        return self._get("activities", limit=limit,
                          occurred_since_date=occurred_since_date,
                          newer_than_version=newer_than_version)
+
 
 class TokenEndpoint(Endpoint):
 
@@ -244,10 +267,12 @@ class StoryEndpoint(Endpoint):
 
 
 class PivotalClient(object):
-    base_url = "https://www.pivotaltracker.com/services/v3/"
 
-    def __init__(self, token, parse_xml=True, cache=None, timeout=None, proxy_info=None):
+    def __init__(self, token,
+                 base_url="https://www.pivotaltracker.com/services/v3/",
+                 parse_xml=True, cache=None, timeout=None, proxy_info=None):
         self.token = token
+        self.base_url = base_url
         self.parse_xml = parse_xml
         self.client = httplib2.Http(cache=cache, timeout=timeout, proxy_info=proxy_info)
 
