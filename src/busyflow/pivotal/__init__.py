@@ -197,8 +197,8 @@ class TokenEndpoint(Endpoint):
 
 class StoryEndpoint(Endpoint):
 
-    def make_story_xml(self, name, description, story_type,
-                       requested_by=None, estimate=None, current_state=None, labels=None):
+    def make_story_xml(self, name=None, description=None, story_type=None,
+                       owned_by=None, requested_by=None, estimate=None, current_state=None, labels=None):
         story = XMLBuilder(format=True)
         with story.story:
             if name is not None:
@@ -207,6 +207,8 @@ class StoryEndpoint(Endpoint):
                 story << ('description', description)
             if requested_by is not None:
                 story << ('requested_by', requested_by)
+            if owned_by is not None:
+                story << ('owned_by', owned_by)
             if story_type is not None:
                 story << ('story_type', story_type)
             if estimate is not None:
@@ -236,16 +238,25 @@ class StoryEndpoint(Endpoint):
         return self._get("projects/%s/stories/%s" % (project_id, story_id))
 
     def post(self, project_id, name, description, story_type,
-             requested_by=None, estimate=None, current_state=None, labels=None):
+             owned_by=None, requested_by=None, estimate=None,
+             current_state=None, labels=None):
         body = self.make_story_xml(name, description, story_type,
-                                   requested_by, estimate, current_state, labels)
+                                   owned_by=owned_by,
+                                   requested_by=requested_by,
+                                   estimate=estimate,
+                                   current_state=current_state,
+                                   labels=labels)
         return self._post("projects/%s/stories" % project_id, body=body)
 
-    def update(self, project_id, story_id, name=None, description=None,
-               requested_by=None, story_type=None, estimate=None,
-               current_state=None, labels=None):
+    def update(self, project_id, story_id,
+               name=None, description=None, owned_by=None, requested_by=None,
+               story_type=None, estimate=None, current_state=None, labels=None):
         body = self.make_story_xml(name, description, story_type,
-                                   requested_by, estimate, current_state, labels)
+                                   owned_by=owned_by,
+                                   requested_by=requested_by,
+                                   estimate=estimate,
+                                   current_state=current_state,
+                                   labels=labels)
         return self._put("projects/%s/stories/%s" % (project_id, story_id), body=body)
 
     def deliver_all_finished_stories(self, project_id):

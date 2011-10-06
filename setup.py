@@ -12,7 +12,7 @@ def get_long_description():
 
 setup(
     name='busyflow.pivotal',
-    version='0.1.9',
+    version='0.1.10',
     description='Pivotal API client library.',
     long_description=get_long_description(),
     author='Ignas Mikalajunas',
