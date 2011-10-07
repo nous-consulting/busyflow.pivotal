@@ -12,7 +12,7 @@ def get_long_description():
 
 setup(
     name='busyflow.pivotal',
-    version='0.1.10',
+    version='0.2.0',
     description='Pivotal API client library.',
     long_description=get_long_description(),
     author='Ignas Mikalajunas',
@@ -28,7 +28,8 @@ setup(
     install_requires=[
         'setuptools',
         'xmlbuilder',
-        'python-dateutil'],
+        'python-dateutil',
+        'poster'],
     package_dir={'': 'src'},
     packages=find_packages('src'),
     namespace_packages=['busyflow'],

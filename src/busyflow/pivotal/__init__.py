@@ -1,6 +1,8 @@
 import time
 import pkg_resources
 import datetime
+from poster.encode import multipart_encode
+from poster.encode import MultipartParam
 from dateutil import parser
 import httplib2
 import urllib
@@ -276,6 +278,24 @@ class StoryEndpoint(Endpoint):
         body = self.make_comment_xml(text, author)
         return self._post("projects/%s/stories/%s/notes" % (project_id, story_id), body=body)
 
+    def add_attachment(self, project_id, story_id, filename, file_obj, filetype):
+        if isinstance(file_obj, basestring):
+            file_obj = open(file_obj, 'rb')
+        file_data = MultipartParam(name='Filedata',
+                                   filename=filename,
+                                   filetype=filetype,
+                                   fileobj=file_obj)
+
+        params = {'Filedata': file_data}
+        data, mp_headers = multipart_encode(params)
+
+        if 'Content-Length' in mp_headers:
+            mp_headers['Content-Length'] = str(mp_headers['Content-Length'])
+
+        return self._post("projects/%s/stories/%s/attachments" % (project_id, story_id),
+                          body="".join(list(data)),
+                          headers=mp_headers)
+
 
 class PivotalClient(object):
 
@@ -297,11 +317,14 @@ class PivotalClient(object):
     def _apicall(self, endpoint, method, **params):
         url = '%s%s' % (self.base_url, endpoint)
         body = params.pop('body', '')
+        _headers = params.pop('headers', {})
         cleaned_params = dict([(k, v) for k, v in params.iteritems() if v])
 
         headers = {'X-TrackerToken': self.token}
         if method in ['POST', 'PUT'] and body:
             headers['Content-type'] = 'application/xml'
+
+        headers.update(_headers)
 
         if cleaned_params:
             assert not body # can't have body and parameters at the same time

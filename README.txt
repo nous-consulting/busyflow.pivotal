@@ -49,14 +49,3 @@ Tasks::
   DELETE http://www.pivotaltracker.com/services/v3/projects/$PROJECT_ID/stories/$STORY_ID/tasks/$TASK_ID
 
 (TODO find out whether it is possible to pass parameters to stories/projects throught URL)
-
-
-Attachments:
-
-IMPORTANT NOTE: The value of the "name" field and attribute in the
-content-disposition header MUST be 'Filedata'. The header entry should
-look something like this
-(Content-Disposition: form-data; name="Filedata"; filename="test.txt")::
-
-  POST http://www.pivotaltracker.com/services/v3/projects/$PROJECT_ID/stories/$STORY_ID/attachments
-
