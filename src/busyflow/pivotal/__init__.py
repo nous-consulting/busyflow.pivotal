@@ -278,13 +278,18 @@ class StoryEndpoint(Endpoint):
         body = self.make_comment_xml(text, author)
         return self._post("projects/%s/stories/%s/notes" % (project_id, story_id), body=body)
 
-    def add_attachment(self, project_id, story_id, filename, file_obj, filetype):
+    def add_attachment(self, project_id, story_id,
+                       filename,
+                       file_obj,
+                       filetype,
+                       filesize=None):
         if isinstance(file_obj, basestring):
             file_obj = open(file_obj, 'rb')
         file_data = MultipartParam(name='Filedata',
                                    filename=filename,
                                    filetype=filetype,
-                                   fileobj=file_obj)
+                                   fileobj=file_obj,
+                                   filesize=filesize)
 
         params = {'Filedata': file_data}
         data, mp_headers = multipart_encode(params)
