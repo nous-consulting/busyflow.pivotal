@@ -14,11 +14,31 @@ from xml.dom import minidom
 log = logging.getLogger(__name__)
 
 
-class HTTPError(Exception):
-    """Base class for all HTTP errors."""
+def error_from_response(http_response, error_class,
+                        response_body=None, parsed_body=None):
+  error = error_class('%s: %i, %s' % (http_response.reason, http_response.status,
+                                      parsed_body if parsed_body else response_body))
+  error.status = http_response.status
+  error.reason = http_response.reason
+  error.body = response_body
+  error.parsed_body = parsed_body
+  error.headers = http_response.items()
+  return error
 
 
-class UnauthorizedError(HTTPError):
+class Error(Exception):
+  pass
+
+
+class RequestError(Error):
+    """Base http exception"""
+    status = None
+    reason = None
+    body = None
+    headers = None
+
+
+class UnauthorizedError(RequestError):
     """Unauthorized exception"""
 
 
@@ -339,19 +359,26 @@ class PivotalClient(object):
                 body = ''
 
         resp, content = self.client.request(url, method=method, body=body, headers=headers)
-        if resp.status == 401:
-            raise UnauthorizedError(content)
 
+        parsed_content = None
         try:
             parsed_content = self.parseContent(content)
-
-            if resp.status != 200:
-                raise HTTPError(parsed_content)
-
-            return parsed_content
         except ValueError:
             log.error(resp, content)
-            raise
+
+        error_cls = RequestError
+        if resp.status == 401:
+            error_cls = UnauthorizedError
+
+        if resp.status != 200:
+            raise error_from_response(resp, error_cls,
+                                      content, parsed_content)
+
+        if parsed_content is None:
+            # generate the error once more
+            self.parseContent(content)
+
+        return parsed_content
 
     def parseContent(self, content):
         dom = minidom.parseString(content)
