@@ -16,18 +16,18 @@ log = logging.getLogger(__name__)
 
 def error_from_response(http_response, error_class,
                         response_body=None, parsed_body=None):
-  error = error_class('%s: %i, %s' % (http_response.reason, http_response.status,
-                                      parsed_body if parsed_body else response_body))
-  error.status = http_response.status
-  error.reason = http_response.reason
-  error.body = response_body
-  error.parsed_body = parsed_body
-  error.headers = http_response.items()
-  return error
+    error = error_class('%s: %i, %s' % (http_response.reason, http_response.status,
+                                        parsed_body if parsed_body else response_body))
+    error.status = http_response.status
+    error.reason = http_response.reason
+    error.body = response_body
+    error.parsed_body = parsed_body
+    error.headers = http_response.items()
+    return error
 
 
 class Error(Exception):
-  pass
+    pass
 
 
 class RequestError(Error):
@@ -36,6 +36,7 @@ class RequestError(Error):
     reason = None
     body = None
     headers = None
+    parsed_body = None
 
 
 class UnauthorizedError(RequestError):
