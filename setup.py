@@ -12,12 +12,12 @@ def get_long_description():
 
 setup(
     name='busyflow.pivotal',
-    version='0.3.1',
+    version='0.3.2',
     description='Pivotal API client library.',
     long_description=get_long_description(),
     author='Ignas Mikalajunas',
     author_email='ignas@nous.lt',
-    url='http://github.com/Ignas/busyflow.pivotal/',
+    url='http://github.com/nous-consulting/busyflow.pivotal/',
     classifiers=['Development Status :: 4 - Beta',
                  'Environment :: Web Environment',
                  'Intended Audience :: Developers',
