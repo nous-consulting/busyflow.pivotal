@@ -10,6 +10,7 @@ import logging
 
 from xmlbuilder import XMLBuilder
 from xml.dom import minidom
+from xml.parsers.expat import ExpatError
 
 log = logging.getLogger(__name__)
 
@@ -364,8 +365,9 @@ class PivotalClient(object):
         parsed_content = None
         try:
             parsed_content = self.parseContent(content)
-        except ValueError:
-            log.error(resp, content)
+        except (ValueError, ExpatError):
+            log.error(resp)
+            log.error(content)
 
         error_cls = RequestError
         if resp.status == 401:
@@ -383,7 +385,9 @@ class PivotalClient(object):
 
     def parseContent(self, content):
         dom = minidom.parseString(content)
+
         if self.parse_xml:
             return parse_dict(dom)
         else:
             return dom
+
