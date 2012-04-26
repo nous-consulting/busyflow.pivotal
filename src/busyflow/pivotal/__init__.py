@@ -80,16 +80,13 @@ def get_tzmap():
 
 def parse_string_to_dt(value):
     try:
-        time_tuple = time.strptime(value, '%Y/%m/%d %H:%M:%S %Z')
+        parts = value.split(' ')
+        dt = ' '.join(parts[:-1])
+        tz = parts[-1]
+        offset = get_tzmap().get(tz, '')
+        time_tuple = parser.parse(dt + ' ' + offset).utctimetuple()
     except ValueError:
-        try:
-            parts = value.split(' ')
-            dt = ' '.join(parts[:-1])
-            tz = parts[-1]
-            offset = get_tzmap().get(tz, '')
-            time_tuple = parser.parse(dt + ' ' + offset).utctimetuple()
-        except ValueError:
-            time_tuple = time.strptime(dt, '%Y/%m/%d %H:%M:%S')
+        time_tuple = time.strptime(dt, '%Y/%m/%d %H:%M:%S')
     return datetime.datetime(
         time_tuple.tm_year,
         time_tuple.tm_mon,
