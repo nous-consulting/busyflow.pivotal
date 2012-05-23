@@ -84,6 +84,12 @@ def parse_string_to_dt(value):
         dt = ' '.join(parts[:-1])
         tz = parts[-1]
         offset = get_tzmap().get(tz, '')
+
+        # Parser returns different times for UTC+3000 and +3000 suffix
+        # The former will add 3 hours to the given time, while the latter
+        # will subtract it
+        offset = offset.replace('UTC', '')
+
         time_tuple = parser.parse(dt + ' ' + offset).utctimetuple()
     except ValueError:
         time_tuple = time.strptime(dt, '%Y/%m/%d %H:%M:%S')
